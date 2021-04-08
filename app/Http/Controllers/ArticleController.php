@@ -2,16 +2,28 @@
 namespace App\Http\Controllers;
 
 use App\Article;
-use App\Tag;
+use App\User;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
     public function index()
     {
-        $articles = request()->has('myArticle') ? auth()->user()->articles : Article::all();
-        $tags = Tag::all();
-        return view('articles', ['articles' => $articles, 'tags' => $tags]);
+        if (request()->has('keyWord')) {
+            $keyWord = request()->input('keyWord');
+            if (request()->input('myArticle') == true) {
+                $articles = auth()->user()->articles()
+                    ->where('title', 'like', '%' . $keyWord . '%')
+                    ->get();
+            } else {
+                $articles = Article::where('title', 'like', '%' . $keyWord . '%')
+                    ->get();
+            }
+            return view('articles', ['articles' => $articles]);
+        } else {
+            $articles = request()->has('myArticle') ? auth()->user()->articles : Article::all();
+            return view('articles', ['articles' => $articles]);
+        }
     }
 
     public function create()

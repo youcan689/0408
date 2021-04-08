@@ -3,16 +3,17 @@
     <form action="create">
         <input type="submit" value="新增文章" />
     </form>
-    <h1>文章分類</h1>
-    @foreach ($tags as $tag)
-        <a href="{{ route('tagArticle', ['id' => $tag->id]) }}"> {{ $tag->title }} <a />
-    @endforeach
+    <form action={{ route('index') }} method="GET">
+        <input type="hidden" name='myArticle' value="{{ app('request')->input('myArticle') }}">
+        <input type="text" name='keyWord' placeholder="請輸入關鍵字">
+        <input type="submit" value="查詢標題中有出現關鍵字的文章">
+    </form>
     @if (request()->has('myArticle'))
         <a href="{{ route('index') }}">文章列表</a>
     @else
         <a href="{{ route('index') }}?myArticle=true">我的所有文章</a>
     @endif
-    @foreach ($articles as $article)
+    @forelse ($articles as $article)
         <h1>
             <a class="text-9xl" href="read/{{ $article->id }}">{{ $article->title }}</a>
         </h1>
@@ -35,5 +36,7 @@
         </form>
         <hr>
         <br>
-    @endforeach
+    @empty
+        <h1>無此標題的文章</h1>
+    @endforelse
 @endsection
